@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hivemind_beta/firebase_options.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hivemind_beta/views/screens/firebase_test.dart';
 import 'views/widgets/top_bar.dart';
 import 'views/widgets/buzz_alert.dart';
@@ -11,9 +12,28 @@ const darkColor = Color(0xFF343A40);
 const darkishText = Color(0xFF495057);
 const whiteColor = Color(0xFFFFFFFF);
 
+ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Handling a background message ${message}");
+ } 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: true,
+    badge: true,
+    carPlay: false, 
+    criticalAlert: false,
+    provisional: false,
+    sound: true
+  );
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) => { }).onError((err) => { });
+  print('User Granted Permission ${settings.authorizationStatus}');
   runApp(const MyApp());
 }
 
