@@ -13,46 +13,38 @@ class ArView extends StatefulWidget {
 }
 
 class _ArViewState extends State<ArView> {
+  Position? _currentPos;
   List<Annotation> annotations = [];
 
   @override
+  void initState() {
+    super.initState();
+
+    annotations.add(
+      Annotation(
+        uid: "!@£!awc",
+        position: Position(
+        latitude: 56.3400687,
+        longitude: -2.8094999,
+        timestamp: DateTime.now(),
+        accuracy: 1,
+        altitude: 1,
+        heading: 1,
+        speed: 1,
+        speedAccuracy: 1,
+        altitudeAccuracy: 0,
+        headingAccuracy: 0,
+        ),
+        type: AnnotationType.message,
+        message: "Tester tester 123",
+      )
+    );
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    annotations.add(
-      Annotation(
-        uid: "!@£!awc",
-        position: Position(
-          latitude: 56.3400687,
-          longitude: -2.8094088,
-          timestamp: DateTime.now(),
-           accuracy: 1,
-    altitude: 1,
-    heading: 1,
-    speed: 1,
-    speedAccuracy: 1,
-    altitudeAccuracy: 0,
-    headingAccuracy: 0,
-        ),
-        type: AnnotationType.pharmacy,
-      )
-    );
-    annotations.add(
-      Annotation(
-        uid: "!@£!awc",
-        position: Position(
-          latitude: 56.3400687,
-          longitude: -2.8094347,
-          timestamp: DateTime.now(),
-           accuracy: 1,
-    altitude: 1,
-    heading: 1,
-    speed: 1,
-    speedAccuracy: 1,
-    altitudeAccuracy: 0,
-    headingAccuracy: 0,
-        ),
-        type: AnnotationType.hotel,
-      )
-    );
+    
     return MaterialApp(
       home: Scaffold(
         body: ArLocationWidget(
@@ -66,13 +58,12 @@ class _ArViewState extends State<ArView> {
               key: ValueKey(annotation.uid),
               annotation: annotation as Annotation,
             );
-          },
+          }, 
           radarWidth: 160,
           scaleWithDistance: false,
           onLocationChange: (Position position) {
             Future.delayed(const Duration(seconds: 5), () {
-              // annotations = fakeAnnotation(position: position, numberMaxPoi: 10);
-               
+              _currentPos = position;
               setState(() {});
             });
           },

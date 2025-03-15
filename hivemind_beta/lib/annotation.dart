@@ -6,13 +6,20 @@ import 'dart:math';
 enum AnnotationType {
   pharmacy,
   hotel,
-  library
+  library,
+  message
 }
 
 class Annotation extends ArAnnotation {
   final AnnotationType type;
+  final String? message;
   
-  Annotation({required super.uid, required super.position, required this.type});
+  Annotation({
+    required super.uid, 
+    required super.position, 
+    required this.type,
+    this.message,  
+  });
 }
 
 AnnotationType getRandomAnnotation() {

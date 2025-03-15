@@ -72,11 +72,68 @@ class AnnotationView extends StatelessWidget {
         iconData = Icons.library_add_outlined;
         color = Colors.blue;
         break;
+      case AnnotationType.message:
+        iconData = Icons.message;
+        color = Colors.orange;
+        break;
     }
-    return Icon(
-      iconData,
-      size: 40,
-      color: color,
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 3,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(iconData, color: color, size: 20),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  annotation.type.toString().split('.').last,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          if (annotation.message != null) ...[
+          Container(
+            constraints: const BoxConstraints(maxHeight: 80), // or whatever height fits
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // ...current child widgets...
+                  Text(
+                    annotation.type.toString().split('.').last,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  // Show the message if it’s not null
+                  if (annotation.message != null)
+                    Text(
+                      annotation.message!,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
+              ),
+            ),
+          ),
+          ],
+        ],
+      ),
     );
+
   }
 }
