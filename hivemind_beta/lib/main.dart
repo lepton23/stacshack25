@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:hivemind_beta/firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hivemind_beta/views/screens/firebase_test.dart';
-// import 'locator.dart';
 
  Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
