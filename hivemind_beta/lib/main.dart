@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'views/widgets/top_bar.dart';
 import 'views/widgets/buzz_alert.dart';
+import 'views/widgets/bottom_bar.dart';
+import 'views/screens/home.dart';
+import 'views/screens/friends.dart';
+import 'views/screens/friend_request_sent.dart';
+import 'views/screens/stream_joined.dart';
+import 'views/screens/stream.dart';
 // Define color constants
 const lightColor = Color(0xFFF8F9FA);
 const darkColor = Color(0xFF343A40);
@@ -56,9 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(
         color: Theme.of(context).colorScheme.background,
         child: const Center(
-          child: BuzzAlert(note: 'Hello There! this app is called HiveMind and it is an interactive app where you leave notes out in the real world !', likes: 0, comments: ['comment1', 'comment2', 'comment3'], dislikes: 0, fixedPhraseAddress: 'apple,ball,cat,dog'),          
+          child: StreamPage(),          
         ),
       ),
+      bottomNavigationBar: BottomBar(),
     );
   }
 }
