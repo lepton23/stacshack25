@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hivemind_beta/models/geo.dart';
 
 class Message {
+  String? id;
   final Geo geo;
   final String body;
   final String fourWords;
@@ -10,6 +11,7 @@ class Message {
   final int dislikes;
 
   Message({
+    this.id,
     required this.geo,
     required this.body,
     required this.fourWords,
@@ -32,6 +34,7 @@ class Message {
   static Message fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
     return Message(
+      id: doc.id,
       geo: Geo.fromMap(data['geo'] as Map<String, dynamic>),
       body: data['body'] as String,
       fourWords: data['fourWords'] as String,
