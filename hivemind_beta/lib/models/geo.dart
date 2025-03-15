@@ -4,7 +4,7 @@ import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 class Geo {
   Geo({required this.geohash, required this.geopoint});
 
-  factory Geo.fromJson(Map<String, dynamic> json) {
+  factory Geo.fromMap(Map<String, dynamic> json) {
     return Geo(geohash: json['geohash'] as String, geopoint: json['geopoint'] as GeoPoint);
   }
 

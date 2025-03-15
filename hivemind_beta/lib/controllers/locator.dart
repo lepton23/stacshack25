@@ -4,13 +4,14 @@ import 'package:geolocator/geolocator.dart';
 
 var api = What3WordsV3('7YGLQZ1W');
 
-Future<String> _get3Words(Position location) async {
+Future<String> get3Words(Position location) async {
   Response<Location> w3words;
-  w3words = await api.convertTo3wa(Coordinates(location.latitude, location.longitude)).execute();
+  w3words = await api.convertTo3wa(Coordinates(location.latitude, location.longitude)).language("en").execute();
 
   if (w3words.isSuccessful()) {
     return w3words.data()!.words;
   } else {
+    print(w3words.error()!.message);
     return Future.error('Could not convert location to what3words.');
   }
 }
@@ -18,7 +19,7 @@ Future<String> _get3Words(Position location) async {
 /// Determine the current position of the device.
 /// When the location services are not enabled or permissions
 /// are denied, will return an error.
-Future<Position> _determinePosition() async {
+Future<Position> determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
 
