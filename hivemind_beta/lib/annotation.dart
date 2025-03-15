@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:ar_location_view/ar_location_view.dart';
+import 'package:uuid/uuid.dart';
+import 'dart:math';
 
 enum AnnotationType {
   pharmacy,
@@ -13,80 +15,54 @@ class Annotation extends ArAnnotation {
   Annotation({required super.uid, required super.position, required this.type});
 }
 
-class AnnotationView extends StatelessWidget {
-  const AnnotationView({
-    super.key,
-    required this.annotation,
-  });
+AnnotationType getRandomAnnotation() {
+  final types = AnnotationType.values.toList();
+  final index = Random.secure().nextInt(types.length);
+  return types[index];
+}
 
-  final Annotation annotation;
+List<Annotation> fakeAnnotation({
+  required Position position,
+  int distance = 1500,
+  int numberMaxPoi = 100,
+}) {
+  return List<Annotation>.generate(
+    numberMaxPoi,
+    (index) {
+      return Annotation(
+        uid: const Uuid().v1(),
+        position: getRandomLocation(
+          position.latitude,
+          position.longitude,
+          distance / 100000,
+          distance / 100000,
+        ),
+        type: getRandomAnnotation(),
+      );
+    },
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  bottomLeft: Radius.circular(5),
-                ),
-              ),
-              child: typeFactory(annotation.type),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    annotation.type.toString().substring(15),
-                    maxLines: 1,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    '${annotation.distanceFromUser.toInt()} m',
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
+Position getRandomLocation(double centerLatitude, double centerLongitude,
+    double deltaLat, double deltaLon) {
+  var lat = centerLatitude;
+  var lon = centerLongitude;
 
-  Widget typeFactory(AnnotationType type) {
-    IconData iconData = Icons.ac_unit_outlined;
-    Color color = Colors.teal;
-    switch (type) {
-      case AnnotationType.pharmacy:
-        iconData = Icons.local_pharmacy_outlined;
-        color = Colors.red;
-        break;
-      case AnnotationType.hotel:
-        iconData = Icons.hotel_outlined;
-        color = Colors.green;
-        break;
-      case AnnotationType.library:
-        iconData = Icons.library_add_outlined;
-        color = Colors.blue;
-        break;
-    }
-    return Icon(
-      iconData,
-      size: 40,
-      color: color,
-    );
-  }
+  final latDelta = -(deltaLat / 2) + Random.secure().nextDouble() * deltaLat;
+  final lonDelta = -(deltaLon / 2) + Random.secure().nextDouble() * deltaLon;
+  lat = lat + latDelta;
+  lon = lon + lonDelta;
+
+  return Position(
+    longitude: lon,
+    latitude: lat,
+    timestamp: DateTime.now(),
+    accuracy: 1,
+    altitude: 1,
+    heading: 1,
+    speed: 1,
+    speedAccuracy: 1,
+    altitudeAccuracy: 0,
+    headingAccuracy: 0,
+  );
 }
