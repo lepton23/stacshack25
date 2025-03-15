@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 
 // import 'locator.dart'
 import 'ar.dart';
+=======
+import 'locator.dart';
+>>>>>>> 767e0d6995930bbf8285bb675187657780284a24
 
 void main() {
   runApp(const MyApp());

@@ -9,7 +9,6 @@ android {
     namespace = "com.example.hivemind_beta"
     compileSdk = flutter.compileSdkVersion
 
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

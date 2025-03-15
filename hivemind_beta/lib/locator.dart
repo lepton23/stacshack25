@@ -5,10 +5,11 @@ import 'package:geolocator/geolocator.dart';
 var api = What3WordsV3('7YGLQZ1W');
 
 Future<String> _get3Words(Position location) async {
-  var 3words = await api.convertTo3wa(location).execute();
+  Response<Location> w3words;
+  w3words = await api.convertTo3wa(Coordinates(location.latitude, location.longitude)).execute();
 
-  if (3words.isSuccessful()) {
-    return 3words;
+  if (w3words.isSuccessful()) {
+    return w3words.data()!.words;
   } else {
     return Future.error('Could not convert location to what3words.');
   }
