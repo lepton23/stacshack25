@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'locator.dart'
+import 'locator.dart';
 
 void main() {
   runApp(const MyApp());
