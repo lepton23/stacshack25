@@ -83,7 +83,7 @@ class _FirebaseTestState extends State<FirebaseTest> {
                             return ListTile(
                               title: Text(message.body),
                               subtitle: Text(
-                                '${message.threeWords} - ${message.geo.geopoint.latitude}, ${message.geo.geopoint.longitude}',
+                                '${message.fourWords} - ${message.geo.geopoint.latitude}, ${message.geo.geopoint.longitude}',
                               ),
                             );
                           },

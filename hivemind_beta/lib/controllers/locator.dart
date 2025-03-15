@@ -1,20 +1,4 @@
-import 'package:what3words/what3words.dart';
 import 'package:geolocator/geolocator.dart';
-
-
-var api = What3WordsV3('7YGLQZ1W');
-
-Future<String> get3Words(Position location) async {
-  Response<Location> w3words;
-  w3words = await api.convertTo3wa(Coordinates(location.latitude, location.longitude)).language("en").execute();
-
-  if (w3words.isSuccessful()) {
-    return w3words.data()!.words;
-  } else {
-    print(w3words.error()!.message);
-    return Future.error('Could not convert location to what3words.');
-  }
-}
 
 /// Determine the current position of the device.
 /// When the location services are not enabled or permissions

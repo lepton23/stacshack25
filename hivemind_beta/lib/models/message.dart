@@ -4,7 +4,7 @@ import 'package:hivemind_beta/models/geo.dart';
 class Message {
   final Geo geo;
   final String body;
-  final String threeWords;
+  final String fourWords;
   final List<String> comments;
   final int likes;
   final int dislikes;
@@ -12,7 +12,7 @@ class Message {
   Message({
     required this.geo,
     required this.body,
-    required this.threeWords,
+    required this.fourWords,
     this.comments = const [],
     this.likes = 0,
     this.dislikes = 0,
@@ -22,7 +22,7 @@ class Message {
     return {
       'geo': geo.toMap(),
       'body': body,
-      'threeWords': threeWords,
+      'fourWords': fourWords,
       'comments': comments,
       'likes': likes,
       'dislikes': dislikes,
@@ -34,7 +34,7 @@ class Message {
     return Message(
       geo: Geo.fromMap(data['geo'] as Map<String, dynamic>),
       body: data['body'] as String,
-      threeWords: data['threeWords'] as String,
+      fourWords: data['fourWords'] as String,
       comments: List<String>.from(data['comments'] ?? []),
       likes: data['likes'] as int? ?? 0,
       dislikes: data['dislikes'] as int? ?? 0,

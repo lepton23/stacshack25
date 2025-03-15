@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:hivemind_beta/controllers/locator.dart';
 import 'package:hivemind_beta/models/geo.dart';
 import 'package:hivemind_beta/models/message.dart';
-import 'package:what3words/what3words.dart';
+import 'getWords.dart';
 
 class FirebaseController {
   final _firestore = FirebaseFirestore.instance;
@@ -14,13 +13,12 @@ class FirebaseController {
     try {
       final position = await determinePosition();
       final GeoFirePoint geoFirePoint = GeoFirePoint(GeoPoint(position.latitude, position.longitude));
-      // final threeWords = await get3Words(position);
-      final threeWords = "temp.poo.rary";
+      final fourWords = get4Words(position);
 
       final message = Message(
         geo: Geo.fromGeoFirePoint(geoFirePoint),
         body: body,
-        threeWords: threeWords,
+        fourWords: fourWords,
         comments: [],
         likes: 0,
         dislikes: 0,
@@ -64,7 +62,7 @@ class FirebaseController {
           print("Document ID: ${doc.id}");
           print("Message: ${message.body}");
           print("Location: ${message.geo.geopoint.latitude}, ${message.geo.geopoint.longitude}");
-          print("Three Words: ${message.threeWords}");
+          print("Three Words: ${message.fourWords}");
           print("Likes: ${message.likes}, Dislikes: ${message.dislikes}");
           print("Comments: ${message.comments}");
           return message;
