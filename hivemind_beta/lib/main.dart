@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'locator.dart'
+
+// import 'locator.dart'
+import 'ar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,10 +33,12 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const ArPage(), 
     );
   }
 }
+
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -118,6 +122,34 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class ArPage extends StatelessWidget {
+  const ArPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('HiveMind Beta'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const Scaffold(
+                  body: ArView(),
+                ),
+              ),
+            );
+          },
+          child: const Text('Launch AR View'),
+        ),
+      ),
     );
   }
 }
