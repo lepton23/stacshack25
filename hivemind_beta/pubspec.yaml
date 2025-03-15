@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   what3words: 3.1.0
   geolocator: 13.0.2
+  firebase_core: ^3.12.1
+  firebase_database: ^11.3.4
 
 dev_dependencies:
   flutter_test:
