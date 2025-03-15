@@ -2,45 +2,42 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hivemind_beta/models/geo.dart';
 
 class Message {
-  Message({
-    required this.body,
-    required this.geo,
-    required this.threeWords,
-    this.likes = 0,
-    this.dislikes = 0,
-    this.comments = const [],
-  });
-
   final Geo geo;
   final String body;
   final String threeWords;
-  int likes;
-  int dislikes;
-  List<String> comments;
+  final List<String> comments;
+  final int likes;
+  final int dislikes;
+
+  Message({
+    required this.geo,
+    required this.body,
+    required this.threeWords,
+    this.comments = const [],
+    this.likes = 0,
+    this.dislikes = 0,
+  });
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'geo': geo.toMap(),
       'body': body,
       'threeWords': threeWords,
+      'comments': comments,
       'likes': likes,
       'dislikes': dislikes,
-      'comments': comments,
     };
   }
 
-  factory Message.fromMap(Map<String, dynamic> map) {
+  static Message fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data()!;
     return Message(
-      geo: Geo.fromJson(map['geo'] as Map<String, dynamic>),
-      body: map['body'] as String,
-      threeWords: map['threeWords'] as String,
-      likes: map['likes'] as int? ?? 0,
-      dislikes: map['dislikes'] as int? ?? 0,
-      comments: List<String>.from(map['comments'] as List<dynamic>? ?? []),
+      geo: Geo.fromMap(data['geo'] as Map<String, dynamic>),
+      body: data['body'] as String,
+      threeWords: data['threeWords'] as String,
+      comments: List<String>.from(data['comments'] ?? []),
+      likes: data['likes'] as int? ?? 0,
+      dislikes: data['dislikes'] as int? ?? 0,
     );
-  }
-
-  factory Message.fromDocumentSnapshot(DocumentSnapshot snapshot) {
-    return Message.fromMap(snapshot.data()! as Map<String, dynamic>);
   }
 }
