@@ -23,9 +23,8 @@ void main() async {
     sound: true
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  final fcmToken = await FirebaseMessaging.instance.getToken(vapidKey: "BMODN9xVEPIcUOblSSaauM6JOPtso9pQdZltFZnOIz7eA5w6tICs6Q8GbhqO8VC22a0vddXC8_UN07aOWsxpwPQ");
+  final fcmToken = await FirebaseMessaging.instance.getToken();
   FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) => { }).onError((err) => { });
-  // String? token = await FirebaseMessaging.instance.getToken();
   print('User Granted Permission ${settings.authorizationStatus}');
   runApp(const MyApp());
 }
