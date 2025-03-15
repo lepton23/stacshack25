@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hivemind_beta/firebase_options.dart';
+import 'package:hivemind_beta/views/screens/firebase_test.dart';
 // import 'locator.dart';
 
 void main() async {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
-      home: Text("Hello, World!"),
+      home: FirebaseTest()
     );
   }
 }
