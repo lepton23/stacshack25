@@ -1,4 +1,4 @@
-# StacsHack25 - Your virtual sticky note!
+# HiveMind - Your virtual sticky note!
 
 ## Tech Stack
 Flutter (Dart)
