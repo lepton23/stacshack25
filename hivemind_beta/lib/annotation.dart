@@ -1,54 +1,40 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:ar_location_view/ar_location_view.dart';
+import 'package:hivemind_beta/models/message.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:math';
 
-enum AnnotationType {
-  pharmacy,
-  hotel,
-  library,
-  message
-}
-
 class Annotation extends ArAnnotation {
-  final AnnotationType type;
-  final String? message;
+  final Message message;
   
   Annotation({
     required super.uid, 
     required super.position, 
-    required this.type,
-    this.message,  
+    required this.message,  
   });
 }
 
-AnnotationType getRandomAnnotation() {
-  final types = AnnotationType.values.toList();
-  final index = Random.secure().nextInt(types.length);
-  return types[index];
-}
-
-List<Annotation> fakeAnnotation({
-  required Position position,
-  int distance = 1500,
-  int numberMaxPoi = 100,
-}) {
-  return List<Annotation>.generate(
-    numberMaxPoi,
-    (index) {
-      return Annotation(
-        uid: const Uuid().v1(),
-        position: getRandomLocation(
-          position.latitude,
-          position.longitude,
-          distance / 100000,
-          distance / 100000,
-        ),
-        type: getRandomAnnotation(),
-      );
-    },
-  );
-}
+// List<Annotation> fakeAnnotation({
+//   required Position position,
+//   int distance = 1500,
+//   int numberMaxPoi = 100,
+// }) {
+//   return List<Annotation>.generate(
+//     numberMaxPoi,
+//     (index) {
+//       return Annotation(
+//         uid: const Uuid().v1(),
+//         position: getRandomLocation(
+//           position.latitude,
+//           position.longitude,
+//           distance / 100000,
+//           distance / 100000,
+//         ),
+//         type: getRandomAnnotation(),
+//       );
+//     },
+//   );
+// }
 
 Position getRandomLocation(double centerLatitude, double centerLongitude,
     double deltaLat, double deltaLon) {
