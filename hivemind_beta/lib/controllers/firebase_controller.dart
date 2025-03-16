@@ -3,6 +3,7 @@ import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 import 'package:hivemind_beta/controllers/locator.dart';
 import 'package:hivemind_beta/models/geo.dart';
 import 'package:hivemind_beta/models/message.dart';
+import 'package:haptic_feedback/haptic_feedback.dart';
 import 'getWords.dart';
 
 class FirebaseController {
@@ -38,6 +39,8 @@ class FirebaseController {
 
   Future<Stream<List<Message>>> getMessages(double radius) async {
     try {
+      final canVibrate = await Haptics.canVibrate();
+      
       print("Getting messages with radius: $radius km");
       final position = await determinePosition();
       print("Current position: ${position.latitude}, ${position.longitude}");
@@ -59,6 +62,14 @@ class FirebaseController {
         print("Received ${documents.length} documents");
         return documents.map((doc) {
           final message = doc.data()!;
+
+          double lat = message.geo.geopoint.latitude;
+          double lng = message.geo.geopoint.longitude;
+
+          if (((lat - position.latitude).abs() >= 0.0001) || ((lng - position.longitude).abs() >= 0.0001)) {
+            Haptics.vibrate(HapticsType.heavy);
+          }
+
           print("Document ID: ${doc.id}");
           print("Message: ${message.body}");
           print("Location: ${message.geo.geopoint.latitude}, ${message.geo.geopoint.longitude}");
