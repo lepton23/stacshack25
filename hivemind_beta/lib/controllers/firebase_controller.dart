@@ -118,9 +118,15 @@ class FirebaseController {
 
   Future<void> acceptFriendRequest(String sender, String receiver) async {
     try {
-      // Add sender to receiver's friends
+      // Add each other as friends
       await _firestore.collection('users').doc(receiver).update({
-        'friends': FieldValue.arrayUnion([sender])
+        'friends': FieldValue.arrayUnion([sender]),
+        'receivedRequests': FieldValue.arrayRemove([sender])
+      });
+      
+      await _firestore.collection('users').doc(sender).update({
+        'friends': FieldValue.arrayUnion([receiver]),
+        'sentRequests': FieldValue.arrayRemove([receiver])
       });
     } catch (e) {
       print("Error accepting friend request: $e");
@@ -133,6 +139,11 @@ class FirebaseController {
       // Remove request from sender's sent requests
       await _firestore.collection('users').doc(sender).update({
         'sentRequests': FieldValue.arrayRemove([receiver])
+      });
+
+      // Remove request from receiver's received requests
+      await _firestore.collection('users').doc(receiver).update({
+        'receivedRequests': FieldValue.arrayRemove([sender])
       });
     } catch (e) {
       print("Error declining friend request: $e");
