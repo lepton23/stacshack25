@@ -15,6 +15,7 @@ import 'views/screens/friend_request_sent.dart';
 import 'views/screens/stream_joined.dart';
 import 'views/screens/stream.dart';
 import 'views/screens/profile.dart';
+
 // Define color constants
 const lightColor = Color(0xFFF8F9FA);
 const darkColor = Color(0xFF343A40);
@@ -64,7 +65,7 @@ class MyApp extends StatelessWidget {
         ),
         textTheme: _buildTextTheme(),
       ),
-      home: MyHomePage()
+      home: MyHomePage(),
     );
   }
 
@@ -86,7 +87,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentPageIndex = 0;
-  List<Widget> _pages = <Widget>[NotesScreen(), CompassDebug(), ArPage(), FirebaseTest()];
+  List<Widget> _pages = <Widget>[NotesScreen(), CompassDebug(), ArPage(), FirebaseTest(), AuthPage(), FriendsPage()];
 
   @override
   Widget build(BuildContext context) {
