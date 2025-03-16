@@ -8,7 +8,7 @@ import 'package:hivemind_beta/views/screens/firebase_test.dart';
 import 'views/widgets/top_bar.dart';
 import 'views/widgets/buzz_alert.dart';
 import 'views/widgets/bottom_bar.dart';
-import 'views/screens/home.dart';
+// import 'views/screens/home.dart';
 import 'views/screens/friends.dart';
 import 'views/screens/friend_request_sent.dart';
 import 'views/screens/stream_joined.dart';
