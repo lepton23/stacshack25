@@ -15,6 +15,8 @@ class ArView extends StatefulWidget {
 class _ArViewState extends State<ArView> {
   Position? _currentPos;
   List<Annotation> annotations = [];
+  List<Annotation> _proximityAnnotations = [];
+  final double proximityRadius = 10.0;
 
   @override
   void initState() {
@@ -41,6 +43,35 @@ class _ArViewState extends State<ArView> {
     );
   }
 
+  void _checkProximity(Position currentPos) {
+    annotations.forEach((annotation) {
+      final distance = Geolocator.distanceBetween(
+        currentPos.latitude,
+        currentPos.longitude,
+        annotation.position.latitude,
+        annotation.position.longitude,
+      );
+      annotation.distanceFromUser = distance;
+
+      if (distance <= proximityRadius) {
+        _proximityAnnotations.add(annotation);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("You are near to ${annotation.message}"),
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: "Close",
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ),
+        );
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +94,10 @@ class _ArViewState extends State<ArView> {
           scaleWithDistance: false,
           onLocationChange: (Position position) {
             Future.delayed(const Duration(seconds: 5), () {
-              _currentPos = position;
-              setState(() {});
+              setState(() {
+                _currentPos = position;
+                _checkProximity(_currentPos as Position);
+              });
             });
           },
         ),
