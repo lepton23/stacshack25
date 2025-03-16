@@ -7,6 +7,7 @@ import 'package:hivemind_beta/models/message.dart';
 import 'annotation.dart';
 import 'annotation_view.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:haptic_feedback/haptic_feedback.dart';
 
 class ArView extends StatefulWidget {
   const ArView({super.key});
@@ -93,6 +94,7 @@ class _ArViewState extends State<ArView> {
                   onLocationChange: (Position position) {
                     Future.delayed(const Duration(seconds: 5), () {
                       _currentPos = position;
+                      Haptics.vibrate(HapticsType.error);
                       setState(() {});
                     });
                   },
