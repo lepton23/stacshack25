@@ -20,12 +20,43 @@ class _ArViewState extends State<ArView> {
   Position? _currentPos;
   final firebaseController = FirebaseController();
   List<Annotation> annotations = [];
+  List<Annotation> _proximityAnnotations = [];
+  final double proximityRadius = 10.0;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _load();
+  }
+
+  void _checkProximity(Position currentPos) {
+    annotations.forEach((annotation) {
+      final distance = Geolocator.distanceBetween(
+        currentPos.latitude,
+        currentPos.longitude,
+        annotation.position.latitude,
+        annotation.position.longitude,
+      );
+      annotation.distanceFromUser = distance;
+
+      if (distance <= proximityRadius) {
+        _proximityAnnotations.add(annotation);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("You are near to ${annotation.message}"),
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: "Close",
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ),
+        );
+      }
+    });
   }
 
   void _load() async {
@@ -83,19 +114,21 @@ class _ArViewState extends State<ArView> {
                 : ArLocationWidget(
                   annotations: annotations,
                   showDebugInfoSensor: false,
-                  annotationWidth: 180,
-                  annotationHeight: 60,
+                  // annotationWidth: 180,
+                  // annotationHeight: 60,
                   radarPosition: RadarPosition.bottomCenter,
                   annotationViewBuilder: (context, annotation) {
                     return AnnotationView(key: ValueKey(annotation.uid), annotation: annotation as Annotation);
                   },
                   radarWidth: 160,
-                  scaleWithDistance: false,
+                  maxVisibleDistance: 80,
+                  scaleWithDistance: true,
                   onLocationChange: (Position position) {
                     Future.delayed(const Duration(seconds: 5), () {
-                      _currentPos = position;
-                      Haptics.vibrate(HapticsType.error);
-                      setState(() {});
+                      setState(() {
+                        _currentPos = position;
+                        _checkProximity(_currentPos!);
+                      });
                     });
                   },
                 ),
@@ -103,4 +136,3 @@ class _ArViewState extends State<ArView> {
     );
   }
 }
-
