@@ -1,8 +1,9 @@
 import 'package:geolocator/geolocator.dart';
+import 'dart:async';
 
-/// Determine the current position of the device.
-/// When the location services are not enabled or permissions
-/// are denied, will return an error.
+/// Determine the current position of the device with maximum possible accuracy.
+/// This function attempts to get a highly accurate GPS fix using high-precision
+/// location permissions and multiple samples.
 Future<Position> determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
@@ -25,87 +26,64 @@ Future<Position> determinePosition() async {
     return Future.error('Location permissions are permanently denied, we cannot request permissions.');
   }
 
-  print('Collecting multiple position samples for higher accuracy...');
+  print('Attempting to get a high-precision position fix...');
 
-  // Collect multiple samples
-  List<Position> positions = [];
-  const int sampleCount = 5;
+  try {
+    // Request high-precision location updates
+    const LocationSettings locationSettings = LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 0);
 
-  for (int i = 0; i < sampleCount; i++) {
-    try {
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.bestForNavigation,
-          timeLimit: Duration(seconds: 5),
-        ),
+    // Get multiple position samples
+    const int sampleCount = 5;
+    const Duration sampleInterval = Duration(milliseconds: 500);
+    List<Position> positions = [];
+
+    for (int i = 0; i < sampleCount; i++) {
+      print('Getting sample ${i + 1} of $sampleCount...');
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings: LocationSettings(accuracy: LocationAccuracy.best, timeLimit: Duration(seconds: 2)),
+        forceAndroidLocationManager: true,
       );
-
       positions.add(position);
-      print(
-        'Sample ${i + 1}/$sampleCount: ${position.latitude}, ${position.longitude}, accuracy: ${position.accuracy} meters',
-      );
-
-      // Small delay between readings
       if (i < sampleCount - 1) {
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(sampleInterval);
       }
-    } catch (e) {
-      print('Error getting position sample: $e');
     }
-  }
 
-  // Filter out low accuracy readings
-  positions = positions.where((pos) => pos.accuracy < 20).toList();
-
-  if (positions.isEmpty) {
-    // Fall back to a single reading if all filtered out
-    return await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.bestForNavigation,
-        timeLimit: Duration(seconds: 30), // Allow more time for a good fix
-      ),
-    );
-  }
-
-  // Sort by accuracy (lower is better)
-  positions.sort((a, b) => a.accuracy.compareTo(b.accuracy));
-
-  // Option 1: Just take the most accurate reading
-  final mostAccurate = positions.first;
-
-  // Option 2: Calculate average of top readings
-  if (positions.length >= 3) {
-    // Take top 3 most accurate readings
-    final topPositions = positions.take(3).toList();
-
-    double sumLat = 0, sumLng = 0, sumAcc = 0;
-    for (var pos in topPositions) {
+    // Calculate the average position
+    double sumLat = 0, sumLon = 0, sumAlt = 0;
+    double bestAccuracy = double.infinity;
+    for (var pos in positions) {
       sumLat += pos.latitude;
-      sumLng += pos.longitude;
-      sumAcc += pos.accuracy;
+      sumLon += pos.longitude;
+      sumAlt += pos.altitude;
+      if (pos.accuracy < bestAccuracy) {
+        bestAccuracy = pos.accuracy;
+      }
     }
 
-    final avgPosition = Position(
-      latitude: sumLat / topPositions.length,
-      longitude: sumLng / topPositions.length,
+    Position averagePosition = Position(
+      latitude: sumLat / sampleCount,
+      longitude: sumLon / sampleCount,
       timestamp: DateTime.now(),
-      accuracy: sumAcc / topPositions.length,
-      altitude: topPositions.first.altitude,
-      altitudeAccuracy: 0,
-      headingAccuracy: 0,
-      heading: 0,
-      speed: 0,
-      speedAccuracy: 0,
+      accuracy: bestAccuracy,
+      altitude: sumAlt / sampleCount,
+      heading: positions.last.heading,
+      speed: positions.last.speed,
+      speedAccuracy: positions.last.speedAccuracy,
+      headingAccuracy: positions.last.headingAccuracy,
+      altitudeAccuracy: positions.last.altitudeAccuracy,
     );
 
-    print(
-      'Average position: ${avgPosition.latitude}, ${avgPosition.longitude}, estimated accuracy: ${avgPosition.accuracy} meters',
-    );
-    return avgPosition;
+    print('High-precision position obtained:');
+    print('  Latitude: ${averagePosition.latitude}');
+    print('  Longitude: ${averagePosition.longitude}');
+    print('  Accuracy: ${averagePosition.accuracy} meters');
+    print('  Altitude: ${averagePosition.altitude} meters');
+    print('  Timestamp: ${averagePosition.timestamp}');
+
+    return averagePosition;
+  } catch (e) {
+    print('Error getting position: $e');
+    return Future.error('Failed to get location: $e');
   }
-
-  print(
-    'Most accurate position: ${mostAccurate.latitude}, ${mostAccurate.longitude}, accuracy: ${mostAccurate.accuracy} meters',
-  );
-  return mostAccurate;
 }

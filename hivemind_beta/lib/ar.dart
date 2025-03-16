@@ -83,14 +83,15 @@ class _ArViewState extends State<ArView> {
                 : ArLocationWidget(
                   annotations: annotations,
                   showDebugInfoSensor: false,
-                  annotationWidth: 180,
-                  annotationHeight: 60,
+                  // annotationWidth: 180,
+                  // annotationHeight: 60,
                   radarPosition: RadarPosition.bottomCenter,
                   annotationViewBuilder: (context, annotation) {
                     return AnnotationView(key: ValueKey(annotation.uid), annotation: annotation as Annotation);
                   },
                   radarWidth: 160,
-                  scaleWithDistance: false,
+                  maxVisibleDistance: 80,
+                  scaleWithDistance: true,
                   onLocationChange: (Position position) {
                     Future.delayed(const Duration(seconds: 5), () {
                       _currentPos = position;
@@ -103,4 +104,3 @@ class _ArViewState extends State<ArView> {
     );
   }
 }
-

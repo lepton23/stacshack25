@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hivemind_beta/views/screens/comp.dart';
 import 'package:hivemind_beta/views/screens/notes_screen.dart';
 import 'ar.dart';
 import 'package:hivemind_beta/firebase_options.dart';
@@ -85,7 +86,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentPageIndex = 0;
-  List<Widget> _pages = <Widget>[NotesScreen(), ArPage(), ArPage(), FirebaseTest(), AuthPage(), FriendsPage()];
+  List<Widget> _pages = <Widget>[NotesScreen(), CompassDebug(), ArPage(), FirebaseTest()];
 
   @override
   Widget build(BuildContext context) {

@@ -46,6 +46,8 @@ dependencies:
   firebase_auth: ^5.5.1
   
   haptic_feedback: ^0.5.1+1
+  flutter_compass: ^0.8.1
+  sensors_plus: ^6.1.1
 
 dev_dependencies:
   flutter_test:
