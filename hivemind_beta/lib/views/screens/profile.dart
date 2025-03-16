@@ -12,9 +12,17 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   bool _isLogin = true; // Track if user wants to login or signup
   String _errorMessage = '';
+  List<String> _requests = [];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (Auth().currentUser != null) {
+      _loadRequests();
+    }
+  }
 
   Future<void> _handleSubmit() async {
     setState(() => _errorMessage = '');
@@ -28,14 +36,13 @@ class _AuthPageState extends State<AuthPage> {
         }
       }
       if (_isLogin) {
+        print("Signing in");
         await Auth().signInWithEmailAndPassword(
           _emailController.text,
           _passwordController.text,
         );
-        await FirebaseController().addUser(
-          _emailController.text,
-          _usernameController.text,
-        );
+        // Load requests whenever page opens
+
       } else {
         await Auth().signUpWithEmailAndPassword(
           _emailController.text,
@@ -43,7 +50,6 @@ class _AuthPageState extends State<AuthPage> {
         );
         await FirebaseController().addUser(
           _emailController.text,
-          _usernameController.text,
         );
       }
       //TODO: ONCE YOU SIGN IN, NAVIGATE TO THE HOME PAGE
@@ -62,11 +68,21 @@ class _AuthPageState extends State<AuthPage> {
     }
   }
 
+  Future<void> _loadRequests() async {
+    try {
+      print("Loading requests");
+      final requests = await FirebaseController().getReceivedRequests(Auth().currentUser!.email!);
+      print(requests);
+      setState(() => _requests = requests);
+    } catch (e) {
+      setState(() => _errorMessage = e.toString());
+    }
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _usernameController.dispose();
     super.dispose();
   }
 
@@ -82,6 +98,7 @@ class _AuthPageState extends State<AuthPage> {
       stream: Auth().authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          //_loadRequests(); // Load requests when user is logged in
           return Scaffold(
             body: Center(
               child: Column(
@@ -89,10 +106,94 @@ class _AuthPageState extends State<AuthPage> {
                 children: [
                   Text(
                     'Currently Logged In',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.titleLarge,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
+                  Container(
+                    margin: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.1), spreadRadius: 0, blurRadius: 10, offset: const Offset(0, 4)),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Friend Requests',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox( // Fixed height for the ListView
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _requests.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      _requests[index],
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    InkWell(
+                                      onTap: () async {
+                                        try {
+                                          await FirebaseController().acceptFriendRequest(
+                                            _requests[index],
+                                            Auth().currentUser!.email!,
+                                          );
+                                          setState(() {
+                                            _requests.removeAt(index);
+                                          });
+                                        } catch (e) {
+                                          setState(() => _errorMessage = e.toString());
+                                        }
+                                      },
+                                      child: Icon(
+                                        Icons.check_circle,
+                                        color: Theme.of(context).colorScheme.primary,
+                                        size: 30,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    InkWell(
+                                      onTap: () async {
+                                        try {
+                                          await FirebaseController().declineFriendRequest(
+                                            _requests[index],
+                                            Auth().currentUser!.email!,
+                                          );
+                                          setState(() {
+                                            _requests.removeAt(index);
+                                          });
+                                        } catch (e) {
+                                          setState(() => _errorMessage = e.toString());
+                                        }
+                                      },
+                                      child: Icon(
+                                        Icons.cancel,
+                                        color: Theme.of(context).colorScheme.error,
+                                        size: 30,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   ElevatedButton(onPressed: _signOut, child: const Text('Sign Out')),
                 ],
               ),
@@ -102,7 +203,7 @@ class _AuthPageState extends State<AuthPage> {
 
         return Scaffold(
           body: Container(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
             padding: const EdgeInsets.all(30),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -125,17 +226,6 @@ class _AuthPageState extends State<AuthPage> {
                         offset: const Offset(0, 4),
                       ),
                     ],
-                  ),
-                  child: TextField(
-                    controller: _usernameController,
-                    decoration: InputDecoration(
-                      hintText: 'Enter username...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      contentPadding: const EdgeInsets.all(20),
-                    ),
-                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 if (!_isLogin) const SizedBox(height: 20),

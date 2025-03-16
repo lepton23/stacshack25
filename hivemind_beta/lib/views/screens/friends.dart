@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:hivemind_beta/controllers/firebase_controller.dart';
+import 'package:hivemind_beta/auth.dart';
+import 'package:hivemind_beta/views/screens/friend_request_sent.dart';
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
 
@@ -8,18 +10,23 @@ class FriendsPage extends StatefulWidget {
 }
 
 class _FriendsPageState extends State<FriendsPage> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  bool _requestSent = false;
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_requestSent) {
+      return const FriendRequestSentPage();
+    }
+
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.all(30),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -44,9 +51,9 @@ class _FriendsPageState extends State<FriendsPage> {
               ],
             ),
             child: TextField(
-              controller: _usernameController,
+              controller: _emailController,
               decoration: InputDecoration(
-                hintText: 'Enter username...',
+                hintText: 'Enter Their Email...',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -58,7 +65,7 @@ class _FriendsPageState extends State<FriendsPage> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // TODO: Implement friend addition
+              _handleAddFriend();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -75,5 +82,21 @@ class _FriendsPageState extends State<FriendsPage> {
         ],
       ),
     );
+  }
+  Future<void> _handleAddFriend() async {
+    try {
+      await FirebaseController().sendFriendRequest( Auth().currentUser!.email!, _emailController.text);
+      setState(() => _requestSent = true);
+      // Reset after 3 seconds
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() => _requestSent = false);
+        }
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
   }
 }

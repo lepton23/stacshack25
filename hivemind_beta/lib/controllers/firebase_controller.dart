@@ -84,22 +84,102 @@ class FirebaseController {
       return Stream.value([]);
     }
   }
-  Future <bool> userExists(String username) async {
-    final user = await _firestore.collection('users').doc(username).get();
+  Future <bool> userExists(String email) async {
+    final user = await _firestore.collection('users').doc(email).get();
     return user.exists;
   }
   
-  Future<void> addUser(String email, String username) async {
+  Future<void> addUser(String email) async {
     try {
       await _firestore.collection('users').doc(email).set({
         'email': email,
-        'username': username,
       });
     } catch (e) {
       print("Error adding user: $e");
       rethrow;
     }
   }
-  
+  Future<void> sendFriendRequest(String sender, String receiver) async {
+    try {
+      // Add request to sender's sent requests
+      await _firestore.collection('users').doc(sender).update({
+        'sentRequests': FieldValue.arrayUnion([receiver])
+      });
 
+      // Add request to receiver's received requests 
+      await _firestore.collection('users').doc(receiver).update({
+        'receivedRequests': FieldValue.arrayUnion([sender])
+      });
+    } catch (e) {
+      print("Error sending friend request: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> acceptFriendRequest(String sender, String receiver) async {
+    try {
+      // Add sender to receiver's friends
+      await _firestore.collection('users').doc(receiver).update({
+        'friends': FieldValue.arrayUnion([sender])
+      });
+    } catch (e) {
+      print("Error accepting friend request: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> declineFriendRequest(String sender, String receiver) async {
+    try {
+      // Remove request from sender's sent requests
+      await _firestore.collection('users').doc(sender).update({
+        'sentRequests': FieldValue.arrayRemove([receiver])
+      });
+    } catch (e) {
+      print("Error declining friend request: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> removeFriend(String email, String friend) async {
+    try {
+      // Remove friend from user's friends
+      await _firestore.collection('users').doc(email).update({
+        'friends': FieldValue.arrayRemove([friend])
+      });
+    } catch (e) {
+      print("Error removing friend: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> getFriends(String email) async {
+    try {
+      final user = await _firestore.collection('users').doc(email).get();
+      return user.data()?['friends'] ?? [];
+    } catch (e) {
+      print("Error getting friends: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> getSentRequests(String email) async {
+    try {
+      final user = await _firestore.collection('users').doc(email).get();
+      return user.data()?['sentRequests'] ?? [];
+    } catch (e) {
+      print("Error getting sent requests: $e");
+      rethrow;
+    }
+  }
+
+  Future<List<String>> getReceivedRequests(String email) async {
+    try {
+      final user = await _firestore.collection('users').doc(email).get();
+      final List<dynamic> receivedRequests = user.data()?['receivedRequests'] ?? [];
+      return receivedRequests.map((e) => e.toString()).toList();
+    } catch (e) {
+      print("Error getting received requests: $e");
+      rethrow;
+    }
+  }
 }

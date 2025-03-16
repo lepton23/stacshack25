@@ -13,7 +13,7 @@ import 'views/screens/friends.dart';
 import 'views/screens/friend_request_sent.dart';
 import 'views/screens/stream_joined.dart';
 import 'views/screens/stream.dart';
-import 'views/screens/auth.dart';
+import 'views/screens/profile.dart';
 // Define color constants
 const lightColor = Color(0xFFF8F9FA);
 const darkColor = Color(0xFF343A40);
@@ -85,7 +85,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentPageIndex = 0;
-  List<Widget> _pages = <Widget>[NotesScreen(), ArPage(), ArPage(), FirebaseTest(), AuthPage()];
+  List<Widget> _pages = <Widget>[NotesScreen(), ArPage(), ArPage(), FirebaseTest(), AuthPage(), FriendsPage()];
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.camera), label: 'AR'),
           BottomNavigationBarItem(icon: Icon(Icons.bug_report), label: 'Master Debugger'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Friends'),
         ],
         currentIndex: _currentPageIndex,
         onTap: (int index) {
