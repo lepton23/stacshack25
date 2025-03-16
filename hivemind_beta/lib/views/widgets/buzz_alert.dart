@@ -156,7 +156,7 @@ class _BuzzAlertState extends State<BuzzAlert> {
                         color: isLiked ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    Text('${likeCount}'),
+                    Text('$likeCount'),
                   ],
                 ),
                 const SizedBox(width: 50),
@@ -175,7 +175,7 @@ class _BuzzAlertState extends State<BuzzAlert> {
                         color: isDisliked ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    Text('${dislikeCount}'),
+                    Text('$dislikeCount'),
                   ],
                 ),
                 

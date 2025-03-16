@@ -1,0 +1,8 @@
+{
+<<<<<<< HEAD
+    "cmake.ignoreCMakeListsMissing": true
+=======
+    "cmake.sourceDirectory": "/home/roastedalmond/Projects/stacshack/stacshack25/hivemind_beta/linux",
+    "java.configuration.updateBuildConfiguration": "interactive"
+>>>>>>> firebase-controller
+}
