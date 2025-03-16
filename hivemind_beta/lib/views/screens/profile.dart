@@ -15,12 +15,14 @@ class _AuthPageState extends State<AuthPage> {
   bool _isLogin = true; // Track if user wants to login or signup
   String _errorMessage = '';
   List<String> _requests = [];
+  List<String> _friends = [];
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (Auth().currentUser != null) {
       _loadRequests();
+      _loadFriends();
     }
   }
 
@@ -78,6 +80,15 @@ class _AuthPageState extends State<AuthPage> {
       setState(() => _errorMessage = e.toString());
     }
   }
+  Future<void> _loadFriends() async {
+    try {
+      final friends = await FirebaseController().getFriends(Auth().currentUser!.email!);
+      print(friends);
+      setState(() => _friends = friends);
+    } catch (e) {
+      setState(() => _errorMessage = e.toString());
+    }
+  }
 
   @override
   void dispose() {
@@ -98,7 +109,8 @@ class _AuthPageState extends State<AuthPage> {
       stream: Auth().authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          //_loadRequests(); // Load requests when user is logged in
+          _loadRequests(); // Load requests when user is logged in
+          _loadFriends();
           return Scaffold(
             body: Center(
               child: Column(
@@ -123,12 +135,12 @@ class _AuthPageState extends State<AuthPage> {
                     child: Column(
                       children: [
                         Text(
-                          'Friend Requests',
+                          'Friend Requests:',
                           style: Theme.of(context).textTheme.bodyLarge,
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 10),
-                        SizedBox( // Fixed height for the ListView
+                        SizedBox( 
                           child: ListView.builder(
                             shrinkWrap: true,
                             itemCount: _requests.length,
@@ -151,7 +163,9 @@ class _AuthPageState extends State<AuthPage> {
                                             Auth().currentUser!.email!,
                                           );
                                           setState(() {
+                                            _friends.add(_requests[index]);
                                             _requests.removeAt(index);
+
                                           });
                                         } catch (e) {
                                           setState(() => _errorMessage = e.toString());
@@ -191,6 +205,27 @@ class _AuthPageState extends State<AuthPage> {
                             },
                           ),
                         ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'Friends:',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _friends.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                child: Text(_friends[index],
+                                textAlign: TextAlign.center,
+                                ),
+                              );
+                            },
+                          ),
+                        ),  
                       ],
                     ),
                   ),

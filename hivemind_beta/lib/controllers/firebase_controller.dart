@@ -173,21 +173,22 @@ class FirebaseController {
       rethrow;
     }
   }
-
-  Future<void> getFriends(String email) async {
+  Future<List<String>> getFriends(String email) async {
     try {
       final user = await _firestore.collection('users').doc(email).get();
-      return user.data()?['friends'] ?? [];
+      final List<dynamic> friends = user.data()?['friends'] ?? [];
+      return friends.map((e) => e.toString()).toList();
     } catch (e) {
       print("Error getting friends: $e");
       rethrow;
     }
   }
 
-  Future<void> getSentRequests(String email) async {
+  Future<List<String>> getSentRequests(String email) async {
     try {
       final user = await _firestore.collection('users').doc(email).get();
-      return user.data()?['sentRequests'] ?? [];
+      final List<dynamic> sentRequests = user.data()?['sentRequests'] ?? [];
+      return sentRequests.map((e) => e.toString()).toList();
     } catch (e) {
       print("Error getting sent requests: $e");
       rethrow;
