@@ -73,4 +73,22 @@ class FirebaseController {
       return Stream.value([]);
     }
   }
+  Future <bool> userExists(String username) async {
+    final user = await _firestore.collection('users').doc(username).get();
+    return user.exists;
+  }
+  
+  Future<void> addUser(String email, String username) async {
+    try {
+      await _firestore.collection('users').doc(email).set({
+        'email': email,
+        'username': username,
+      });
+    } catch (e) {
+      print("Error adding user: $e");
+      rethrow;
+    }
+  }
+  
+
 }
