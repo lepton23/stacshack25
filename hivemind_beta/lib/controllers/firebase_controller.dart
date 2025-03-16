@@ -5,6 +5,7 @@ import 'package:hivemind_beta/models/geo.dart';
 import 'package:hivemind_beta/models/message.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
 import 'getWords.dart';
+import 'encrypt.dart';
 
 class FirebaseController {
   final _firestore = FirebaseFirestore.instance;
@@ -16,11 +17,21 @@ class FirebaseController {
       final GeoFirePoint geoFirePoint = GeoFirePoint(GeoPoint(position.latitude, position.longitude));
       final fourWords = get4Words(position);
 
+      var pk;
+      keyGen().then((keys) {
+         pk = keys.getPk();
+      });
+
+      var ct;
+      encrypt(pk).then((hash) {
+        ct = hash.getCt();
+      });
+
       final message = Message(
         geo: Geo.fromGeoFirePoint(geoFirePoint),
         body: body,
         fourWords: fourWords,
-        comments: [],
+        comments: [ct],
         likes: 0,
         dislikes: 0,
       );
@@ -194,3 +205,4 @@ class FirebaseController {
     }
   }
 }
+
